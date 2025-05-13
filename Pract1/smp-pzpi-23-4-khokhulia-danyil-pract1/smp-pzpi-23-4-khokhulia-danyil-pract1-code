@@ -1,0 +1,117 @@
+#!/bin/bash
+
+draw_row() {
+    local full=$1
+    local input_length=$2
+    local char=$3
+    local half_spaces=$(((full - input_length) / 2))
+
+    printf "%*s" $half_spaces ""
+    printf "%*s" $input_length "" | tr " " "$char"
+    echo
+}
+
+toggle_symbol() {
+    local current=$1
+    [[ "$current" == "*" ]] && echo "#" || echo "*"
+}
+
+tree_height=$1
+snow_width=$2
+
+is_positive=0
+until [ $is_positive -eq 1 ]; do
+    if [ "$tree_height" -le 0 ] || [ "$snow_width" -le 0 ]; then
+        echo "Error: use numbers for input" >&2
+        exit 1
+    fi
+    is_positive=1
+done
+
+MIN_HEIGHT=8
+MIN_WIDTH=7
+
+if [ "$tree_height" -lt $MIN_HEIGHT ] || [ "$snow_width" -lt $MIN_WIDTH ]; then
+    echo "Error: try to use another values current are to small" >&2
+    exit 1
+fi
+
+difference_between_params=$((tree_height - snow_width))
+
+if [ "$difference_between_params" -lt 0 ] || [ "$difference_between_params" -gt 2 ]; then
+    echo "Error: incorrect values for height and width" >&2
+    exit 1
+fi
+
+IS_HEIGHT_EVEN=$((tree_height % 2 == 0))
+IS_WIDTH_EVEN=$((snow_width % 2 == 0))
+IS_HEIGHT_ODD=$((tree_height % 2 != 0))
+IS_WIDTH_ODD=$((snow_width % 2 != 0))
+
+if [ "$IS_HEIGHT_ODD" -eq 1 ] && [ "$IS_WIDTH_ODD" -eq 1 ] && [ "$difference_between_params" -eq 0 ]; then
+    echo "Error: incorrect values for height and width" >&2
+    exit 1
+fi
+
+if [ "$IS_HEIGHT_EVEN" -eq 1 ] && [ "$IS_WIDTH_EVEN" -eq 1 ] && [ "$difference_between_params" -eq 2 ]; then
+    echo "Error: incorrect values for height and width" >&2
+    exit 1
+fi
+
+if [ $((snow_width % 2)) -eq 0 ]; then
+    snow_width=$((snow_width - 1))
+fi
+
+if [ "$difference_between_params" -eq 2 ] && [ "$IS_HEIGHT_EVEN" -eq 1 ] && [ "$IS_WIDTH_ODD" -eq 1 ]; then
+    tree_height=$((tree_height - 1))
+fi
+
+if [ "$IS_HEIGHT_ODD" -eq 1 ] && [ "$IS_WIDTH_ODD" -eq 1 ] && [ "$difference_between_params" -eq 2 ]; then
+    tree_height=$((tree_height - 1))
+fi
+
+final_height=$tree_height
+final_width=$snow_width
+
+if [ $tree_height -eq $((snow_width + 1)) ] && ! ([ $((tree_height % 2)) -eq 0 ] && [ $((snow_width % 2)) -eq 1 ]); then
+    final_height=$((tree_height - 1))
+fi
+
+if [ $snow_width -eq $((tree_height - 2)) ] && [ $((snow_width % 2)) -eq 1 ] && [ $((tree_height % 2)) -eq 1 ]; then
+    final_height=$((tree_height - 1))
+fi
+
+if [ $((final_width % 2)) -eq 0 ]; then
+    final_width=$((final_width - 1))
+fi
+
+part_height_for_calculation=$((final_height - 3))
+first_tier_size=$((part_height_for_calculation / 2 + part_height_for_calculation % 2))
+second_tier_size=$((part_height_for_calculation / 2))
+
+j=1
+char="*"
+
+for ((row = 1; row <= first_tier_size; row++)); do
+    draw_row $final_width $j "$char"
+    j=$((j + 2))
+    char=$(toggle_symbol "$char")
+done
+
+j=3
+row=0
+
+while [ $row -lt $second_tier_size ]; do
+    draw_row $final_width $j "$char"
+    j=$((j + 2))
+    char=$(toggle_symbol "$char")
+    row=$((row + 1))
+done
+
+for i in {1..2}; do
+    draw_row $final_width 3 "#"
+done
+
+draw_row $final_width $final_width "*"
+
+exit 0
