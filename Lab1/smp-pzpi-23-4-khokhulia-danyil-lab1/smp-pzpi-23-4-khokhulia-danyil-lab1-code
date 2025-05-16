@@ -1,0 +1,206 @@
+#!/bin/bash
+
+VER="1"
+QUIET=false
+GRP=""
+CSV_FILE=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --help)
+            echo "Використання: $0 [назва_групи] [файл.csv]"
+            echo "  --help         Вивести довідку"
+            echo "  --version      Вивести версію"
+            echo "  -q, --quiet    Тихий режим"
+            exit 0
+            ;;
+        --version)
+            echo "Версія: $VER"
+            exit 0
+            ;;
+        -q|--quiet)
+            QUIET=true
+            ;;
+        *.csv)
+            CSV_FILE="$1"
+            ;;
+        *)
+            GRP="$1"
+            ;;
+    esac
+    shift
+done
+
+print() {
+    [[ "$QUIET" == false ]] && echo "$@"
+}
+
+if [[ -z "$CSV_FILE" ]]; then
+    files_found=($(ls -t TimeTable_??_??_20??.csv 2>/dev/null))
+    if [[ ${#files_found[@]} -eq 0 ]]; then
+        echo "Файли TimeTable_ДД_ММ_РРРР.csv не знайдено." >&2
+        exit 1
+    fi
+    files_found+=("Вихід")
+    print "Оберіть файл:"
+    select opt in "${files_found[@]}"; do
+        if [[ "$opt" == "Вихід" ]]; then
+            print "Вихід."
+            exit 0
+        elif [[ -n "$opt" ]]; then
+            CSV_FILE="$opt"
+            print "Вибрано: $opt"
+            break
+        else
+            print "Невірний вибір. Повторіть ще раз."
+        fi
+    done
+fi
+
+[[ ! -f "$CSV_FILE" ]] && { echo "Файл '$CSV_FILE' не знайдено." >&2; exit 1; }
+
+group_candidates=($(iconv -f cp1251 -t utf-8 "$CSV_FILE" | sed 's/\r/\n/g' | tee __tmp_gr.csv | awk '
+BEGIN { FPAT="[^,]*|\"[^\"]*\"" }
+NR>1 {
+    gsub(/^"|"$/, "", $1)
+    n=split($1,a," ")
+    for(i=1;i<=n;i++) if(a[i] ~ /^ПЗПІ-23-[0-9]+$/) print a[i]
+}' | sort -u))
+
+[[ ${#group_candidates[@]} -eq 0 ]] && { echo "Не знайдено груп формату ПЗПІ-23-N." >&2; exit 1; }
+
+if [[ -n "$GRP" && ${#group_candidates[@]} -eq 1 && "$GRP" != "${group_candidates[0]}" ]]; then
+    print "Увага: у файлі є лише одна група: ${group_candidates[0]}"
+    exit 0
+fi
+
+if [[ -z "$GRP" ]]; then
+    if [[ ${#group_candidates[@]} -eq 1 ]]; then
+        GRP="${group_candidates[0]}"
+        print "Автовибір групи: $GRP"
+    else
+        print "Оберіть групу:"
+        group_candidates+=("Назад")
+        select grp in "${group_candidates[@]}"; do
+            [[ "$grp" == "Назад" ]] && { print "Назад."; exit 0; }
+            [[ -n "$grp" ]] && { GRP="$grp"; print "Обрано: $GRP"; break; }
+            print "Невірний вибір."
+        done
+    fi
+fi
+
+parse_type=$(iconv -f cp1251 -t utf-8 "$CSV_FILE" | sed 's/\r/\n/g' | awk '
+BEGIN { FPAT="[^,]*|\"[^\"]*\"" }
+NR > 1 {
+    gsub(/^"|"$/, "", $1)
+    split($1, a, " ")
+    if (a[1] ~ /^ПЗПІ-23-[0-9]+$/) print "std"
+    else if ($5 ~ /^ПЗПІ-23-[0-9]+$/) print "alt:" $5
+    exit
+}')
+
+if [[ "$parse_type" =~ ^alt:(.+) ]]; then
+    fallback="${BASH_REMATCH[1]}"
+    print "Fallback-режим: $fallback"
+    GRP="$fallback"
+    FB=true
+else
+    FB=false
+    print "Аналіз розкладу для: $GRP"
+fi
+
+filename_date=$(echo "$CSV_FILE" | grep -oE '[0-9]{2}_[0-9]{2}_20[0-9]{2}')
+OUTFILE="Google_TimeTable_${filename_date}.csv"
+TMP_A=$(mktemp)
+TMP_B=$(mktemp)
+
+iconv -f cp1251 -t utf-8 "$CSV_FILE" | sed 's/\r/\n/g' | awk -v GROUP="$GRP" -v FALL="$FB" '
+BEGIN { FS=","; OFS="\t" }
+NR == 1 { next }
+
+function remove_quotes(x) { gsub(/^"|"$/, "", x); return x }
+function make_sort_key(d,t){split(d,a,".");split(t,b,":");return sprintf("%04d%02d%02d%02d%02d",a[3],a[2],a[1],b[1],b[2]) }
+
+{
+    line=$0
+    match(line, /"[0-3][0-9]\.[0-1][0-9]\.[0-9]{4}"/)
+    if(RSTART==0) next
+    left=substr(line,1,RSTART-2); right=substr(line,RSTART)
+    n=0; inq=0; f=""
+    for(i=1;i<=length(right);i++){
+        c=substr(right,i,1)
+        if(c=="\"") inq=!inq
+        else if(c==","&&!inq){ a[++n]=f; f="" }
+        else f=f c
+    }
+    a[++n]=f
+    for(i=1;i<=n;i++) a[i]=remove_quotes(a[i])
+    if(n<12) next
+
+    if(FALL=="true"){ subj=remove_quotes(left) }
+    else {
+        match(left, /(ПЗПІ-[0-9]+-[0-9]+)[[:space:]]*-[[:space:]]*/, m)
+        if(m[1] != GROUP) next
+        left=substr(left,RSTART+RLENGTH)
+        gsub(/^[[:space:]]+/, "", left)
+        subj=left
+    }
+
+    typ="Інше"
+    if(a[11] ~ /Лб/) typ="Лб"
+    else if(a[11] ~ /Лк/) typ="Лк"
+    else if(a[11] ~ /Пз/) typ="Пз"
+    else if(a[11] ~ /Екз|Exam|екзамен/i) typ="Екз"
+
+    print subj, typ, a[1], a[2], a[3], a[4], a[11], make_sort_key(a[1],a[2])
+}
+' > "$TMP_A"
+
+sort -t $'\t' -k8,8 "$TMP_A" > "$TMP_B"
+
+awk -F'\t' '
+BEGIN {
+    OFS = ",";
+    print "Subject", "Start Date", "Start Time", "End Date", "End Time", "Description"
+}
+
+function format_date(input) {
+    split(input, parts, ".");
+    return sprintf("%02d/%02d/%04d", parts[2], parts[1], parts[3])
+}
+
+function format_time(input) {
+    split(input, t, ":");
+    h = t[1] + 0;
+    m = t[2];
+    ap = (h >= 12) ? "PM" : "AM";
+    if (h == 0) h = 12;
+    else if (h > 12) h -= 12;
+    return sprintf("%02d:%s %s", h, m, ap)
+}
+
+{
+    key = $1 "_" $2;
+    date_key = $3 "_" $7;
+
+    if ($2 == "Лб") {
+        if (!(date_key in mark)) {
+            count[key]++;
+            mark[date_key] = count[key]
+        }
+        num = mark[date_key]
+    } else {
+        count[key]++;
+        num = count[key]
+    }
+
+    subject_name = $1 "; №" num
+    print "\"" subject_name "\"", "\"" format_date($3) "\"", "\"" format_time($4) "\"", "\"" format_date($5) "\"", "\"" format_time($6) "\"", "\"" $7 "\""
+}
+' "$TMP_B" > "$OUTFILE"
+
+
+[[ "$QUIET" == false ]] && cat "$OUTFILE"
+echo "[ІНФО] Створено файл: $OUTFILE"
+
+rm -f "$TMP_A" "$TMP_B" __tmp_gr.csv
