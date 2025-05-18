@@ -1,0 +1,175 @@
+<?php 
+
+$prices = ['Молоко пастеризоване' => 12, 
+          'Хліб чорний' => 9, 
+          'Сир білий' => 21, 
+          'Сметана 20%' => 25, 
+          'Кефір 1%' => 19, 
+          'Вода газована' => 18, 
+          'Печиво "Весна"' => 14]; 
+
+$products = ['Молоко пастеризоване', 'Хліб чорний', 'Сир білий', 
+'Сметана 20%', 'Кефір 1%', 'Вода газована', 'Печиво "Весна"']; 
+
+$basket = []; 
+
+function Get_length($array) 
+{ 
+    $max_l = 0; 
+    foreach ($array as $el) { 
+        if (iconv_strlen($el) > $max_l) { 
+            $max_l = iconv_strlen($el); 
+        } 
+    } 
+    return $max_l; 
+} 
+
+function Show_basket() 
+{ 
+    global $basket; 
+    if (count($basket) == 0) { 
+        print "\nКОШИК ПОРОЖНІЙ\n"; 
+        return; 
+    } 
+    $sorted = array_keys($basket); 
+    sort($sorted); 
+    $max_length = Get_length($sorted); 
+    print "У КОШИКУ:\n"; 
+    print 'НАЗВА' . str_repeat(' ', $max_length - 5 + 2) . "КІЛЬКІСТЬ\n"; 
+    foreach ($sorted as $product) { 
+        print $product . str_repeat(' ', $max_length - iconv_strlen($product) + 2) 
+        . $basket[$product] . "\n"; 
+    } 
+} 
+
+function Buy_product($ind) 
+{ 
+    global $products; 
+    global $basket; 
+    print "Вибрано: " . $products[$ind - 1] . "\n"; 
+    $amount = readline('Введіть кількість, штук: '); 
+
+    if (!is_numeric($amount) || floor($amount) != $amount) {
+        print "ПОМИЛКА! Ви вказали неціле число\n";
+        return;
+    }
+
+    if ($amount === '0') { 
+        print 'ВИДАЛЯЮ ТОВАР З КОШИКА'; 
+        if (array_key_exists($products[$ind - 1], $basket)) { 
+            unset($basket[$products[$ind - 1]]); 
+        } 
+    } else if ($amount < 1 || $amount > 99) { 
+        print "ПОМИЛКА! Ви вказали неправильну кількість товару (від 1 до 99)\n"; 
+    } else { 
+        $basket[$products[$ind - 1]] = $amount; 
+    } 
+    Show_basket(); 
+}
+
+function Pick_product() 
+{ 
+    global $products; 
+    global $prices; 
+    $max_length = Get_length($products); 
+    while (true) { 
+        print "\n№  НАЗВА" . str_repeat(' ', $max_length - 5 + 2) . "ЦІНА\n"; 
+        foreach ($products as $i => $product) { 
+            print ($i + 1) . '  ' 
+            . $product . str_repeat(' ', $max_length - iconv_strlen($product) + 2) 
+            . $prices[$product] . "\n"; 
+        } 
+        print "   -----------\n0  ПОВЕРНУТИСЯ\n"; 
+        $choice = readline('Виберіть товар: '); 
+        if ($choice === '0') { 
+            return; 
+        } 
+        if ($choice < 1 || $choice > count($products)) { 
+            print "ПОМИЛКА! ВКАЗАНО НЕПРАВИЛЬНИЙ НОМЕР ТОВАРУ\n"; 
+            continue; 
+        } 
+        Buy_product($choice); 
+    } 
+} 
+
+function Get_bill() 
+{ 
+    global $products; 
+    global $prices; 
+    global $basket; 
+    print "\n"; 
+    if (count($basket) == 0) { 
+        print "КОШИК ПОРОЖНІЙ\n"; 
+        return; 
+    } 
+    $sorted = array_keys($basket); 
+    sort($sorted); 
+    $max_length_product = Get_length($products); 
+    $max_length_price = max(Get_length($prices), iconv_strlen('ЦІНА')); 
+    $max_length_amount = max(Get_length($basket), iconv_strlen('КІЛЬКІСТЬ')); 
+    $sum = 0; 
+    $i = 0; 
+    print '№  НАЗВА' . str_repeat(' ', $max_length_product - 5 + 2) 
+    . 'ЦІНА' . str_repeat(' ', $max_length_price - 4 + 2) 
+    . 'КІЛЬКІСТЬ' . str_repeat(' ', $max_length_amount - 9 + 2) . "ВАРТІСТЬ\n"; 
+    foreach ($sorted as $product) { 
+        $amount = $basket[$product]; 
+        print ++$i . '  ' . $product 
+        . str_repeat(' ', $max_length_product - iconv_strlen($product) + 2) 
+        . $prices[$product] 
+        . str_repeat(' ', $max_length_price - iconv_strlen($prices[$product]) + 2) 
+        . $amount . str_repeat(' ', $max_length_amount - iconv_strlen($amount) + 2) 
+        . ($amount * $prices[$product]) . "\n"; 
+        $sum += $amount * $prices[$product]; 
+    } 
+    print 'РАЗОМ ДО СПЛАТИ: ' . $sum . "\n"; 
+} 
+
+function Change_profile() 
+{ 
+    print "\n"; 
+    $name = readline('Ваше імʼя: '); 
+   while (!preg_match('/\p{L}/u', $name)) {
+    print "\nПОМИЛКА! В ІМЕНІ МАЄ БУТИ ХОЧА Б ОДНА ЛІТЕРА\n\n";
+    $name = readline('Ваше імʼя: ');
+}
+    $age = readline('Ваш вік: '); 
+    while ($age < 7 || $age > 150) { 
+        print "ПОМИЛКА! НЕПРАВИЛЬНИЙ ВІК КОРИСТУВАЧА\n\n"; 
+        $age = readline('Ваш вік: '); 
+    } 
+    print "\nВаше імʼя: " . $name . "\nВаш вік: " . $age . "\n"; 
+} 
+
+function Run_menu() 
+{ 
+    while (true) { 
+        print "\n1 Вибрати товари 
+2 Отримати підсумковий рахунок 
+3 Налаштувати свій профіль 
+0 Вийти з програми\n"; 
+        $option_selected = readline('Введіть команду: '); 
+        switch ($option_selected) { 
+        case '0': 
+            print "\n"; 
+            return; 
+        case 1: 
+            Pick_product(); 
+            break; 
+        case 2: 
+            Get_bill(); 
+            break; 
+        case 3: 
+            Change_profile(); 
+            break; 
+        default: 
+            print 'ПОМИЛКА! Введіть правильну команду'; 
+            break; 
+        } 
+    } 
+} 
+
+print "\n################################ 
+# ПРОДОВОЛЬЧИЙ МАГАЗИН \"ВЕСНА\" # 
+################################\n"; 
+Run_menu(); 
