@@ -1,0 +1,706 @@
+Харківський національний університет радіоелектроніки
+Факультет комп’ютерних наук
+Кафедра програмної інженерії
+
+ЗВІТ
+З лабораторної роботи №3
+з дисципліни «Скриптові мови програмування»
+
+Виконав                                                                                                     
+ст. гр. ПЗПІ-23-4                                                
+Хохуля Даниіл                                           
+
+Перевірив
+ст. викладач кафедри ПІ
+Сокорчук Ігор Петрович
+
+Харків 2025
+
+СТРУКТУРУВАННЯ КОДУ, РОБОТА 3 ФОРМАМИ, АВТЕНТИФІКАЦІЯ ТА АВТОРИЗАЦІЯ
+
+1 ІСТОРІЯ ЗМІН
+
+№	Дата	      Версія звіту	Опис змін та виправлень
+1  05.06.2025	     0.1		Створено розділи «Історія змін», «Завдання», «Опис виконаної роботи», «Висновки», «Додаток А», «Додаток Б» , «Додаток В» , «Додаток Г» , «Додаток Ґ» , «Додаток Д» , «Додаток E» , «Додаток Є», «Додаток Ж» , «Додаток З», «Додаток И» , «Додаток І»
+
+2 ЗАВДАННЯ
+2.1 Мета роботи
+Навчитися масштабувати код програм, працювати з формами, здійснювати авторизацію та обмеження прав доступу. 
+2.2 Завдання 
+Використовуючи матеріал попередніх лабораторних робіт, потрібно додати такий функціонал:
+1. Прибрати дублювання шапки і підвалу сайту (якщо воно є). 
+2. Додати сторінку логіна. Обмежити доступ до сайту не залогіненим користувачам. 
+3. Додати сторінку профілю з можливістю завантажити фото.
+
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+Для виконання даної лабораторної роботи було обрано середовище розробки Visual Studio Code. До гіпертекстової розмітки також було додано елементи каскадних стилей, щоб покращити досвід використання для користувача.
+Дублювання header та footer було прибрано ще при виконання третьої лабораторної роботи. Для них було створено відповідні файли header.php та footer.php. Але також вони зазнали деяких змін під час виконання наступних двох завдань, тому їх код ви зможете побачити відповідно в додатках Б та В.
+Після цього я перейшов до виконання другого завдання, а саме додавання функції логіну та обмеження доступу до не авторизованих користувачів. Спочатку я додав зміни до хеадеру, а саме замінив для неавторизованих користувачів блок корзини на логіну.
+Після цього я перейшов до створення сторінки page404.php. Вона потрібна нам щоб повідомити користувача що він є не авторизованим, і йому обмежено доступ до певних елементів сайту до моменту авторизації. На цій сторінці я також додав посилання на сторінку логіну. Код можна знайти у Додатку Г.
+Надалі постало питання розробки сторінку логіна користувача, для цього мені довелося створити 4 файли. 
+Перший з них відповідає за збереження пари логіну та пароля, щоб уникнути використання бд, було обрано створити файл credential.php, який зберігає дані для доступу. Його код можна знайти в Додатку Ґ.
+Другий є самою формою для вводу даних для подальшої авторизації, вона містить в собі два інпут поля та кнопку підтвердження форми. Після підтвердження введені дані надсилаються до функції перевірки та авторизує користувача. Код файлу можна побачити в Додатку Д.
+Третій файл якраз і є функцію валідації аккаунту, я виніс бізнес логіку перевірки даних до окремого файлу, бо це підходом більш чистої архітектури ніж коли графічні елементи знаходяться в одному файлі з логікою застосунку. Його код можна побачити в Додатку Е.
+І четвертий файл, є функцію вихіду з аккаунту, він затирає дані про авторизацію з сесії, та потребує від користувача повторної авторизації, якщо він хоче продовжити роботу на платформі. Код міститься в Додатку Є.
+Також головна сторінка зазнала змін, бо потрібно обмежити доступ не авторизованих користувачів до фунціоналу сайту, тому її код знаходиться в Додатку Ж.
+Далі я перейшов до виконання третього завдання, а саме створення профілю користувача. Для виконання мені знадобилося створити ще 3 додаткові файли.
+Спочатку було створено файл подібний до credential.php, який також в собі містить масив з даними. Це створено так само з метою уникнення використання бази даних. Файл отримав назву profile.php. Всередені він зберігає ім’я, прізвище, дату народження, опис та аватар користувача. Його код наведено в Додатку З.
+Після цього було створено форму для сторінки профіля, яка відображує усю інформацію з масиву, та додає змогу змінювати дані та надсилати запис на оновлення. До форми було додано валідацію яка перевіряє наступні умови:
+- всі поля не порожні. 
+- ім'я та прізвище - це рядок, і довжина більше одного символу. 
+- користувачеві має бути не менше 16 років.
+- стисла інформація має містити не менше 50 символів.
+Після того як усі умови було перевірено, надсилається запит на оновлення даних Код файлу можна знайти в Додатку И.
+      
+4 ВИСНОВКИ
+У результаті виконання даної лабораторної роботи я навчився масштабувати код програм, працювати з формами, здійснювати авторизацію та обмеження прав доступу. 
+
+ДОДАТОК А
+Відеозапис
+Відеозапис результатів виконання лабораторної роботи: https://youtu.be/IjHtxb4gbuQ
+Хронологічний опис відеозапису: 
+00:00 - Демонстрація змін у header.php файлі 
+0:55 - Демонстрація змін у index.php файлі
+1:35 - Розбір сторінки page404.php
+2:12 - Файл credentional.php 
+2:28 - Форма для авторизації користувачів у файлі login.php 
+3:31 - Функція авторизації користувачів у файлі process_login.php 
+4:50 - Розбір файлу logout.php 
+5:28 - Розбір файлу profile.php 
+5:44 - Валідація та оновлення профілю у файлі edit_profile.php 
+9:03 - Розбір форми для оновлення профілю у файлі edit_profile.php 
+10:36 - Демонстрація роботи програми
+
+ДОДАТОК Б
+Код файлу header.php
+Github репозиторій в якому розміщено код: https://github.com/NureKhokhuliaDanyil/smp-pzpi-23-4-khokhulia-danyil/tree/main/Lab4/smp-pzpi-23-4-khokhulia-danyil-lab4
+  1 <header class="header">
+  2   <style>
+  3     .header {
+  4       display: flex;
+  5       align-items: center;
+  6       justify-content: space-between;
+  7       padding: 13px 20px;
+  8       border-bottom: 3px solid black;
+  9       position: absolute;
+ 10       top: 0;
+ 11       left: 0;
+ 12       right: 0;
+ 13       background-color: white;
+ 14       z-index: 1000;
+ 15     }
+ 16
+ 17     .header a.header-link {
+ 18       display: flex;
+ 19       align-items: center;
+ 20       gap: 10px;
+ 21       text-decoration: none;
+ 22       color: #333;
+ 23       font-weight: bold;
+ 24       font-size: 18px;
+ 25       transition: color 0.3s ease;
+ 26     }
+ 27
+ 28     .header a.header-link:hover {
+ 29       color: #007BFF;
+ 30     }
+ 31
+ 32     .header b {
+ 33       margin: 0 10px;
+ 34     }
+ 35   </style>
+ 36
+ 37   <a href="home.php" class="header-link">
+ 38     <img src="data:image/jpeg;base64, "
+ 39     height="60"
+ 40     alt="Home">
+ 41     Home
+ 42   </a>
+ 43
+ 44   <b>|</b>
+ 45
+ 46   <a href="products.php" class="header-link">
+ 47     <img
+ 48     src="data:image/png;base64,
+ 49     height="60"
+ 50     alt="Products">
+ 51     Products
+ 52   </a>
+ 53
+ 54   <b>|</b>
+ 55
+ 56 <?php
+ 57         if (session_status() === PHP_SESSION_NONE) {
+ 58             session_start();
+ 59         }
+ 60
+ 61         if (isset($_SESSION['user'])) {
+ 62             echo '<a href="basket.php" class="header-link">';
+ 63             echo '<img src="data:image/png;base64, height="60" alt="Basket">';
+ 64             echo 'Basket';
+ 65             echo '</a>';
+ 66             echo '<b>|</b>';
+ 67             echo '<a href="edit_profile.php" class="header-link">';
+ 68             echo '<img src="data:image/png;base64, 60" alt="Profile">';
+ 69             echo 'Profile';
+ 70             echo '</a>';
+ 71             echo '<b>|</b>';
+ 72             echo '<a href="logout.php" class="header-link">';
+ 73             echo '<img src="data:image/png;base64, height="60" alt="Logout">';
+ 74             echo 'Logout';
+ 75             echo '</a>';
+ 76         } else {
+ 77             echo '<a href="login.php" class="header-link">';
+ 78             echo '<img src="data:image/jpeg;base64, height="60" alt="Login">';
+ 79             echo 'Login';
+ 80             echo '</a>';
+ 81         }
+ 82         ?>
+ 83   </a>
+ 84 </header>
+
+ДОДАТОК В
+Код файлу footer.php
+  1 <footer class="footer">
+  2   <style>
+  3     .footer {
+  4       display: flex;
+  5       align-items: center;
+  6       justify-content: center;
+  7       gap: 20px;
+  8       padding: 13px;
+  9       border-top: 3px solid black;
+ 10       position: absolute;
+ 11       bottom: 0;
+ 12       left: 0;
+ 13       right: 0;
+ 14       background-color: #f9f9f9;
+ 15     }
+ 16
+ 17     .footer a.footer-link {
+ 18       display: flex;
+ 19       align-items: center;
+ 20       gap: 10px;
+ 21       text-decoration: none;
+ 22       color: #333;
+ 23       font-weight: bold;
+ 24       font-size: 18px;
+ 25       transition: color 0.3s ease, text-decoration 0.3s ease;
+ 26     }
+ 27
+ 28     .footer a.footer-link:hover {
+ 29       color: #007BFF;
+ 30       text-decoration: underline;
+ 31     }
+ 32
+ 33     .footer span {
+ 34       color: #888;
+ 35     }
+ 36   </style>
+ 37
+ 38   <a href="home.php" class="footer-link">Home</a>
+ 39   <span>|</span>
+ 40   <a href="products.php" class="footer-link">Products</a>
+ 41   <span>|</span>
+ 42   <a href="basket.php" class="footer-link">Basket</a>
+ 43   <span>|</span>
+ 44   <a href="about_us.php" class="footer-link">About Us</a>
+ 45 </footer>
+
+ДОДАТОК Г
+Код файлу page404.php
+  1 <!DOCTYPE html>
+  2 <html lang="uk">
+  3 <head>
+  4     <meta charset="UTF-8">
+  5     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  6     <title>Обмежений доступ</title>
+  7     <style>
+  8         body {
+  9             margin: 0;
+ 10             padding: 0;
+ 11             font-family: Arial, sans-serif;
+ 12             background-color: #f9f9f9;
+ 13             color: #333;
+ 14             display: flex;
+ 15             justify-content: center;
+ 16             align-items: center;
+ 17             height: 100vh;
+ 18             text-align: center;
+ 19         }
+ 20
+ 21         .container {
+ 22             background-color: #fff;
+ 23             padding: 40px;
+ 24             border-radius: 8px;
+ 25             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+ 26             max-width: 400px;
+ 27             width: 100%;
+ 28         }
+ 29         a {
+ 30             align-items: center;
+ 31             gap: 10px;
+ 32             text-decoration: none;
+ 33             color: #333;
+ 34             font-weight: bold;
+ 35             font-size: 18px;
+ 36             transition: color 0.3s ease;
+ 37         }
+ 38         h1 {
+ 39             margin-bottom: 20px;
+ 40         }
+ 41         a:hover {
+ 42          color: #007BFF;
+ 43         }
+ 44
+ 45     </style>
+ 46 </head>
+ 47 <body>
+ 48     <div class="container">
+ 49         <h2>Для перегляду цього контенту вам потрібно пройти авторизацію.</h2>
+ 50         <a href="login.php">Перейти на сторінку Login</a>
+ 51     </div>
+ 52 </body>
+ 53 </html>
+
+ДОДАТОК Ґ
+Код файлу credential.php
+  1 <?php
+  2 return [
+  3     'userName' => 'Test',
+  4     'password' => '123123',
+  5 ];
+  6 ?>
+
+ДОДАТОК Д
+Код файлу login.php
+    1 <?php
+  2 session_start();
+  3 include 'header.php';
+  4 ?>
+  5
+  6 <style>
+  7     body {
+  8         font-family: Arial, sans-serif;
+  9         background-color: #f4f4f4;
+ 10         display: flex;
+ 11         justify-content: center;
+ 12         align-items: center;
+ 13         height: 100vh;
+ 14         margin: 0;
+ 15     }
+ 16
+ 17     .login-container {
+ 18         text-align: center;
+ 19         padding: 20px;
+ 20         background-color: white;
+ 21         border: 1px solid #ddd;
+ 22         border-radius: 8px;
+ 23         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+ 24         width: 300px;
+ 25     }
+ 26
+ 27     h1 {
+ 28         color: #333;
+ 29     }
+ 30
+ 31     form {
+ 32         margin-top: 20px;
+ 33     }
+ 34
+ 35     input[type="text"], input[type="password"] {
+ 36         width: 100%;
+ 37         padding: 10px;
+ 38         margin: 5px 0;
+ 39         border: 1px solid #ccc;
+ 40         border-radius: 4px;
+ 41     }
+ 42
+ 43     button {
+ 44         padding: 10px 20px;
+ 45         background-color: #007BFF;
+ 46         color: white;
+ 47         border: none;
+ 48         border-radius: 5px;
+ 49         cursor: pointer;
+ 50         transition: background-color 0.3s ease;
+ 51     }
+ 52
+ 53     button:hover {
+ 54         background-color: #0056b3;
+ 55     }
+ 56
+ 57     .error-message {
+ 58         color: red;
+ 59         margin-top: 10px;
+ 60     }
+ 61 </style>
+ 62
+ 63 <div class="login-container">
+ 64     <h1>Авторизація</h1>
+ 65     <?php
+ 66     if (isset($_GET['error'])) {
+ 67         echo '<p class="error-message">Помилка: ' . htmlspecialchars($_GET['error']) . '</p>';
+ 68     }
+ 69     ?>
+ 70     <form action="process_login.php" method="POST">
+ 71         <label for="username">Ім'я користувача:</label><br>
+ 72         <input type="text" id="username" name="username" required><br><br>
+ 73
+ 74         <label for="password">Пароль:</label><br>
+ 75         <input type="password" id="password" name="password" required><br><br>
+ 76
+ 77         <button type="submit">Увійти</button>
+ 78     </form>
+ 79 </div>
+ 80
+ 81 <?php include 'footer.php'; ?>
+
+ДОДАТОК Е
+Код файлу process_login.php
+  1 <?php
+  2 session_start();
+  3
+  4 $credentials = require 'credential.php';
+  5
+  6 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  7     $username = $_POST['username'];
+  8     $password = $_POST['password'];
+  9
+ 10     if (empty($username) || empty($password)) {
+ 11         header('Location: login.php?error=Всі поля є обов’язковими');
+ 12         exit;
+ 13     }
+ 14
+ 15     if ($username === $credentials['userName'] && $password === $credentials['password']) {
+ 16         $_SESSION['user'] = $username;
+ 17         $_SESSION['login_time'] = date('Y-m-d H:i:s');
+ 18
+ 19         header('Location: products.php');
+ 20         exit;
+ 21     } else {
+ 22         header('Location: login.php?error=Неправильне ім’я користувача або пароль');
+ 23         exit;
+ 24     }
+ 25 } else {
+ 26     header('Location: login.php');
+ 27     exit;
+ 28 }
+ 29 ?> 
+
+ДОДАТОК Є
+Код файлу logout.php
+  1 <?php
+  2 session_start();
+  3 session_unset();
+  4 session_destroy();
+  5
+  6 header('Location: login.php');
+  7 exit;
+  8 ?>
+
+ДОДАТОК Ж
+Код файлу index.php
+  1 <?php
+  2 session_start();
+  3
+  4 include 'header.php';
+  5
+  6 $page = isset($_GET['page']) ? $_GET['page'] : '';
+  7 $isAuthenticated = isset($_SESSION['user']);
+  8
+  9 switch ($page) {
+ 10     case "home":
+ 11         if ($isAuthenticated) {
+ 12             include 'home.php';
+ 13         } else {
+ 14             include 'page404.php';
+ 15         }
+ 16         break;
+ 17     case "products":
+ 18         if ($isAuthenticated) {
+ 19             include 'products.php';
+ 20         } else {
+ 21             include 'page404.php';
+ 22         }
+ 23         break;
+ 24     case "about_us":
+ 25         if ($isAuthenticated) {
+ 26             include 'about_us.php';
+ 27         } else {
+ 28             include 'page404.php';
+ 29         }
+ 30         break;
+ 31     case "basket":
+ 32         if ($isAuthenticated) {
+ 33             include 'basket.php';
+ 34         } else {
+ 35             include 'page404.php';
+ 36         }
+ 37         break;
+ 38     case "login":
+ 39         include 'login.php';
+ 40         break;
+ 41     default:
+ 42         include 'page404.php';
+ 43         break;
+ 44 }
+ 45
+ 46 include 'footer.php';
+ 47 ?>
+
+ДОДАТОК З
+Код файлу profile.php
+  1 <?php return array (
+  2   'name' => 'Daniil',
+  3   'surname' => 'Doe',
+  4   'date_of_birth' => '2000-10-11',
+  5   'description' => 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+  6   'photo' => 'photo_2025-03-26_03-52-14.jpg',
+  7 ); ?>
+
+ДОДАТОК И
+Код файлу edit_profile.php
+  1 <?php
+  2 session_start();
+  3
+  4 if (!isset($_SESSION['user'])) {
+  5     header('Location: login.php');
+  6     exit;
+  7 }
+  8
+  9 $profile = require 'profile.php';
+ 10
+ 11 $errors = [];
+ 12 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+ 13     $name = trim($_POST['name'] ?? '');
+ 14     $surname = trim($_POST['surname'] ?? '');
+ 15     $date_of_birth = $_POST['date_of_birth'] ?? '';
+ 16     $description = trim($_POST['description'] ?? '');
+ 17
+ 18     if (empty($name) || strlen($name) < 2) {
+ 19         $errors[] = 'Ім’я повинно бути не менше 2 символів.';
+ 20     }
+ 21     if (empty($surname) || strlen($surname) < 2) {
+ 22         $errors[] = 'Прізвище повинно бути не менше 2 символів.';
+ 23     }
+ 24     if (empty($date_of_birth)) {
+ 25         $errors[] = 'Дата народження обов’язкова.';
+ 26     } else {
+ 27         try {
+ 28             $birth_date = new DateTime($date_of_birth);
+ 29             $today = new DateTime();
+ 30             $age = $today->diff($birth_date)->y;
+ 31             if ($age < 16) {
+ 32                 $errors[] = 'Вам повинно бути не менше 16 років.';
+ 33             }
+ 34         } catch (Exception $e) {
+ 35             $errors[] = 'Неправильний формат дати народження.';
+ 36         }
+ 37     }
+ 38     if (empty($description) || strlen($description) < 50) {
+ 39         $errors[] = 'Опис повинен містити не менше 50 символів.';
+ 40     }
+ 41
+ 42     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+ 43         $upload_dir = 'uploads/';
+ 44         $file_name = basename($_FILES['photo']['name']);
+ 45         $file_path = $upload_dir . $file_name;
+ 46         $allowed_types = ['image/jpeg', 'image/png'];
+ 47         $file_type = mime_content_type($_FILES['photo']['tmp_name']);
+ 48
+ 49         if (!in_array($file_type, $allowed_types)) {
+ 50             $errors[] = 'Допускаються лише файли JPEG та PNG.';
+ 51         } elseif (!move_uploaded_file($_FILES['photo']['tmp_name'], $file_path)) {
+ 52             $errors[] = 'Помилка при завантаженні файлу.';
+ 53         }
+ 54     }
+ 55
+ 56     if (empty($errors)) {
+ 57         $profile = [
+ 58             'name' => $name,
+ 59             'surname' => $surname,
+ 60             'date_of_birth' => $date_of_birth,
+ 61             'description' => $description,
+ 62             'photo' => isset($_FILES['photo']) ? $file_name : $profile['photo'],
+ 63         ];
+ 64
+ 65         file_put_contents(
+ 66             'profile.php',
+ 67             '<?php return ' . var_export($profile, true) . '; ?>'
+ 68         );
+ 69
+ 70         header('Location: edit_profile.php?success=true');
+ 71         exit;
+ 72     }
+ 73 }
+ 74 ?>
+ 75
+ 76 <!DOCTYPE html>
+ 77 <html lang="uk">
+ 78 <head>
+ 79     <meta charset="UTF-8">
+ 80     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 81     <title>Редагування профілю</title>
+ 82     <style>
+ 83     body {
+ 84         font-family: Arial, sans-serif;
+ 85         background-color: #f4f4f4;
+ 86         margin: 0;
+ 87         padding: 0;
+ 88     }
+ 89
+ 90      .container {
+ 91         margin: 100px auto 50px auto;
+ 92         background: #fff;
+ 93         padding: 30px;
+ 94         border-radius: 10px;
+ 95         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+ 96         flex-grow: 1;
+ 97     }
+ 98
+ 99     .form-header {
+100         display: flex;
+101         gap: 30px;
+102     }
+103
+104     .form-photo {
+105         flex: 1;
+106         display: flex;
+107         flex-direction: column;
+108         align-items: center;
+109     }
+110
+111     .form-photo img {
+112         max-width: 200px;
+113         border: 1px solid #ccc;
+114         border-radius: 5px;
+115         margin-bottom: 10px;
+116     }
+117
+118     .form-fields {
+119         flex: 2;
+120         display: flex;
+121         flex-wrap: wrap;
+122         gap: 20px;
+123     }
+124
+125     .form-field {
+126         flex: 1 1 45%;
+127         display: flex;
+128         flex-direction: column;
+129     }
+130
+131     .form-field label {
+132         font-weight: bold;
+133         margin-bottom: 5px;
+134     }
+135
+136     input[type="text"],
+137     input[type="date"],
+138     textarea,
+139     input[type="file"] {
+140         padding: 10px;
+141         border: 1px solid #ccc;
+142         border-radius: 4px;
+143     }
+144
+145     textarea {
+146         height: 100px;
+147         resize: vertical;
+148         margin-top: 10px;
+149         width: 100%;
+150     }
+151
+152     .form-description {
+153         margin-top: 30px;
+154     }
+155
+156     .submit-button {
+157         display: flex;
+158         justify-content: flex-end;
+159         margin-top: 20px;
+160     }
+161
+162     button {
+163         padding: 10px 25px;
+164         background-color: #007BFF;
+165         color: white;
+166         border: none;
+167         border-radius: 6px;
+168         font-weight: bold;
+169         cursor: pointer;
+170         transition: 0.3s;
+171     }
+172
+173     button:hover {
+174         background-color: #0056b3;
+175     }
+176
+177     .error-message {
+178         color: red;
+179         margin-top: 10px;
+180     }
+181
+182     .success-message {
+183         color: green;
+184         margin-bottom: 10px;
+185     }
+186 </style>
+187
+188 </head>
+189 <body>
+190 <?php
+191 include 'header.php';
+192 ?>
+193    <div class="container">
+194     <h2>Редагування профілю</h2>
+195
+196     <?php if (isset($_GET['success'])) echo '<p class="success-message">Профіль оновлений успішно!</p>'; ?>
+197     <?php if (!empty($errors)) echo '<p class="error-message">' . implode('<br>', $errors) . '</p>'; ?>
+198
+199     <form action="edit_profile.php" method="POST" enctype="multipart/form-data">
+200         <div class="form-header">
+201
+202             <div class="form-photo">
+203                 <?php if (!empty($profile['photo'])): ?>
+204                     <img src="uploads/<?php echo htmlspecialchars($profile['photo']); ?>" alt="User Photo">
+205                 <?php else: ?>
+206                     <div style="width:200px;height:200px;border:1px solid #ccc;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#aaa;">No Image</div>
+207                 <?php endif; ?>
+208                 <input type="file" name="photo">
+209             </div>
+210
+211             <div class="form-fields">
+212                 <div class="form-field">
+213                     <label for="name">Ім’я:</label>
+214                     <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($profile['name']); ?>" required>
+215                 </div>
+216                 <div class="form-field">
+217                     <label for="surname">Прізвище:</label>
+218                     <input type="text" id="surname" name="surname" value="<?php echo htmlspecialchars($profile['surname']); ?>" required>
+219                 </div>
+220                 <div class="form-field">
+221                     <label for="date_of_birth">Дата народження:</label>
+222                     <input type="date" id="date_of_birth" name="date_of_birth" value="<?php echo htmlspecialchars($profile['date_of_birth']); ?>" required>
+223                 </div>
+224             </div>
+225         </div>
+226
+227         <div class="form-description">
+228             <label for="description"><strong>Короткий опис:</strong></label>
+229             <textarea id="description" name="description" required><?php echo htmlspecialchars($profile['description']); ?></textarea>
+230         </div>
+231
+232         <div class="submit-button">
+233             <button type="submit">Зберегти</button>
+234         </div>
+235     </form>
+236 </div>
+237
+238     <?php
+239 include 'footer.php';
+240 ?>
+241
+242 </body>
+243 </html>

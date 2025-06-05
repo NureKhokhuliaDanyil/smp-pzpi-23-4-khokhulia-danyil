@@ -1,0 +1,7 @@
+<?php return array (
+  'name' => 'Danyil',
+  'surname' => 'Khokhulia',
+  'date_of_birth' => '2000-10-02',
+  'description' => 'JHGFJKDSHGJFSHGJKFDHJGHJASHDUJASHFUIJAHNSUJFHUAWIHFKJALSFKLASHJUGASHULGJHUWOHGUWAHFGJLASNFLJKSAHFUWHFUSAHNJKLFNSAJILFHWUHFSJKLAHJFSAKLHJFWQHJIF',
+  'photo' => 'image (4).png',
+); ?>
